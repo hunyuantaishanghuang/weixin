@@ -1,0 +1,21 @@
+# 依赖
+node_modules/
+
+# 源码映射（体积大且无源码价值）
+**/*.map
+
+# 系统/编辑器
+**/.DS_Store
+**/Thumbs.db
+
+# 日志
+*.log
+
+# 私有配置（可能含上传密钥，勿提交）
+project.private.config.json
+
+# 项目内部数据/缓存
+.codebuddy/
+
+# 非前端重复目录（如需可移除下行）
+miniapp/

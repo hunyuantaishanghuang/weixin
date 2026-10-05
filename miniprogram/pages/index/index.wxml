@@ -1,0 +1,22 @@
+<view class="home">
+  <view class="deco deco1"></view>
+  <view class="deco deco2"></view>
+
+  <view class="header">
+    <view class="greet">{{greet}}，我的小日子 💕</view>
+    <view class="title">我们的小日子</view>
+    <view class="subtitle" wx:if="{{bound}}">已与 TA 绑定 · 识别码 {{pairId}}</view>
+    <view class="subtitle link" wx:else bindtap="goPair">尚未绑定，点此与 TA 连上线 →</view>
+  </view>
+
+  <view class="grid">
+    <view class="card" wx:for="{{menus}}" wx:key="name" bindtap="goPage" data-page="{{item.page}}" hover-class="card-hover" hover-stay-time="80">
+      <view class="card-icon" style="background:{{item.bg}}">{{item.icon}}</view>
+      <view class="card-name">{{item.name}}</view>
+      <view class="card-desc">{{item.desc}}</view>
+      <view class="card-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="footer" bindtap="goPair" wx:if="{{bound}}" hover-class="footer-hover">管理伴侣关系 ›</view>
+</view>

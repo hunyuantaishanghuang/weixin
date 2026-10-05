@@ -1,0 +1,38 @@
+<view class="period">
+  <view class="deco"></view>
+  <!-- 预测卡片 -->
+  <view class="card predict">
+    <view class="big" wx:if="{{nextDate}}">{{nextDate}}</view>
+    <view class="big empty" wx:else>记下第一天吧</view>
+    <view class="sub" wx:if="{{countdown}}">预计下次来临 · {{countdown}}</view>
+    <view class="row">
+      <view class="mini"><view class="num">{{cycle}}</view><view class="cap">🔄 平均周期(天)</view></view>
+      <view class="mini"><view class="num">{{duration}}</view><view class="cap">📅 经期(天)</view></view>
+    </view>
+    <view class="fertile" wx:if="{{fertileStart}}">易孕期大约 {{fertileStart}} ~ {{fertileEnd}}</view>
+  </view>
+
+  <view class="hist-title">过往记录</view>
+  <view class="hist">
+    <view class="hist-item" wx:for="{{records}}" wx:key="_id">
+      <text>🩸 {{item.date}}</text>
+      <text class="del" data-id="{{item._id}}" bindtap="remove">移除</text>
+    </view>
+    <view class="empty" wx:if="{{!records.length}}">还没有记录哦</view>
+  </view>
+
+  <view class="fab press" hover-class="press-hover" hover-stay-time="80" bindtap="openAdd">＋ 记一笔</view>
+
+  <view class="mask" wx:if="{{showAdd}}" bindtap="closeAdd">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">记上这一天</view>
+      <picker mode="date" value="{{pickDate}}" bindchange="onDate">
+        <view class="picker">📅 {{pickDate}}</view>
+      </picker>
+      <view class="sheet-actions">
+        <button class="btn ghost press" hover-class="press-hover" bindtap="closeAdd">取消</button>
+        <button class="btn primary press" hover-class="press-hover" bindtap="submit">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

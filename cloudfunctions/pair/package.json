@@ -1,0 +1,9 @@
+{
+  "name": "pair",
+  "version": "1.0.0",
+  "description": "情侣小程序配对与身份校验云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

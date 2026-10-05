@@ -1,0 +1,42 @@
+.period { position: relative; overflow: hidden; min-height: 100vh; background: #FFF5F7; padding: 32rpx; padding-bottom: 160rpx; }
+.period .deco {
+  position: absolute; width: 300rpx; height: 300rpx; border-radius: 50%;
+  background: #FFD1DC; filter: blur(70rpx); opacity: 0.5; top: -60rpx; right: -80rpx; z-index: 0;
+}
+.card.predict {
+  position: relative; z-index: 1;
+  background: linear-gradient(135deg, #FF9A9E, #FECFEF);
+  border-radius: 32rpx; padding: 52rpx 40rpx; color: #fff; text-align: center;
+  box-shadow: 0 14rpx 36rpx rgba(255,154,158,0.4);
+  border: 2rpx solid rgba(255,255,255,0.35);
+}
+.big { font-size: 58rpx; font-weight: bold; letter-spacing: 1rpx; }
+.big.empty { font-size: 36rpx; }
+.sub { font-size: 26rpx; margin-top: 16rpx; opacity: 0.95; }
+.row { display: flex; justify-content: space-around; margin-top: 40rpx; }
+.mini { text-align: center; }
+.num { font-size: 44rpx; font-weight: bold; }
+.cap { font-size: 22rpx; opacity: 0.92; margin-top: 6rpx; }
+.fertile { margin-top: 32rpx; font-size: 24rpx; background: rgba(255,255,255,0.28); border-radius: 30rpx; padding: 14rpx; }
+.hist-title { font-size: 28rpx; color: #666; margin: 40rpx 8rpx 16rpx; }
+.hist-item {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #fff; border-radius: 16rpx; padding: 26rpx 30rpx; margin-bottom: 16rpx;
+  font-size: 28rpx; color: #444;
+}
+.del { color: #FF6B81; font-size: 24rpx; }
+.empty { text-align: center; color: #bbb; font-size: 26rpx; padding: 40rpx; }
+.fab {
+  position: fixed; right: 40rpx; bottom: 60rpx;
+  background: #FF6B81; color: #fff; font-size: 30rpx;
+  padding: 24rpx 40rpx; border-radius: 50rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255,107,129,0.4);
+}
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 10; }
+.sheet { background: #fff; width: 100%; border-radius: 28rpx 28rpx 0 0; padding: 40rpx; box-sizing: border-box; }
+.sheet-title { font-size: 34rpx; font-weight: bold; text-align: center; margin-bottom: 30rpx; }
+.picker { background: #F6F6F6; border-radius: 12rpx; padding: 28rpx; text-align: center; font-size: 30rpx; }
+.sheet-actions { display: flex; gap: 20rpx; margin-top: 30rpx; }
+.btn { flex: 1; border-radius: 30rpx; font-size: 30rpx; padding: 18rpx 0; }
+.btn.primary { background: #FF6B81; color: #fff; }
+.btn.ghost { background: #F2F2F2; color: #666; }

@@ -1,0 +1,44 @@
+<view class="diary">
+  <view class="banner">
+    <view class="banner-title">💭 心情日记</view>
+    <view class="banner-sub">收藏我们的小心情</view>
+  </view>
+
+  <view class="list">
+    <view class="entry" wx:for="{{diaries}}" wx:key="_id">
+      <view class="entry-head">
+        <text class="mood">{{item.mood.icon}}</text>
+        <text class="date">{{item.date}}</text>
+        <text class="del" data-id="{{item._id}}" bindtap="remove">删除</text>
+      </view>
+      <view class="text" wx:if="{{item.text}}">{{item.text}}</view>
+      <view class="imgs" wx:if="{{item.images.length}}">
+        <image wx:for="{{item.images}}" wx:for-item="img" wx:key="*this" class="img" src="{{img}}" mode="aspectFill" />
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!diaries.length}}">还没有日记，写点今天的心情吧~</view>
+  </view>
+
+  <view class="fab press" hover-class="press-hover" hover-stay-time="80" bindtap="openAdd">＋ 写日记</view>
+
+  <view class="mask" wx:if="{{showAdd}}" bindtap="closeAdd">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">写篇日记</view>
+      <view class="moods">
+        <view class="mood-item {{form.mood===item.key?'active':''}}" wx:for="{{moods}}" wx:key="key" data-key="{{item.key}}" bindtap="pickMood">
+          <text class="mi-icon">{{item.icon}}</text>
+          <text class="mi-label">{{item.label}}</text>
+        </view>
+      </view>
+      <textarea class="text-input" placeholder="今天，心情如何？" value="{{form.text}}" bindinput="onText" />
+      <view class="imgs">
+        <image wx:for="{{form.images}}" wx:for-item="img" wx:key="*this" wx:for-index="idx" class="img" src="{{img}}" mode="aspectFill" bindtap="removeImg" data-idx="{{idx}}" />
+        <view class="img-add" bindtap="uploadImages">📷</view>
+      </view>
+      <view class="sheet-actions">
+        <button class="btn ghost press" hover-class="press-hover" bindtap="closeAdd">取消</button>
+        <button class="btn primary press" hover-class="press-hover" bindtap="submit">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,53 @@
+<view class="pair">
+  <!-- 加载中 -->
+  <view class="center" wx:if="{{step === 'loading'}}">
+    <view class="loading">加载中...</view>
+  </view>
+
+  <!-- 未绑定：选择创建或加入 -->
+  <view class="center" wx:elif="{{step === 'unbound'}}">
+    <view class="heart">💕</view>
+    <view class="tip-title">与TA绑定专属关系</view>
+    <view class="tip-sub">绑定后，你们的点菜、日记、留言都会安全地只属于彼此</view>
+    <button class="btn primary press" hover-class="press-hover" bindtap="onCreate">创建我的识别码</button>
+    <view class="divider"><text>或</text></view>
+    <input class="code-input" placeholder="输入TA的6位识别码" maxlength="6" bindinput="onInput" value="{{inputCode}}" />
+    <button class="btn ghost press" hover-class="press-hover" bindtap="onJoin">加入TA的关系</button>
+  </view>
+
+  <!-- 已创建识别码，等待对方 -->
+  <view class="center" wx:elif="{{step === 'created'}}">
+    <view class="heart">✨</view>
+    <view class="tip-title">把识别码发给TA</view>
+    <view class="code-box press" hover-class="press-hover" bindtap="copyCode">
+      <text class="code-text">{{code}}</text>
+      <text class="copy-hint">点击复制</text>
+    </view>
+    <view class="tip-sub">等待TA输入识别码加入，并等你确认…</view>
+  </view>
+
+  <!-- 对方已申请，等待我确认 -->
+  <view class="center" wx:elif="{{step === 'pending'}}">
+    <view class="heart">🔔</view>
+    <view class="tip-title">TA申请加入啦！</view>
+    <view class="tip-sub">确认后你们将正式绑定</view>
+    <button class="btn primary press" hover-class="press-hover" bindtap="onConfirm">确认绑定</button>
+  </view>
+
+  <!-- 已加入，等待对方确认 -->
+  <view class="center" wx:elif="{{step === 'joining'}}">
+    <view class="heart">⏳</view>
+    <view class="tip-title">已发送申请</view>
+    <view class="tip-sub">等待对方确认中…（无需操作，自动刷新）</view>
+  </view>
+
+  <!-- 已绑定 -->
+  <view class="center" wx:elif="{{step === 'bound'}}">
+    <view class="heart">💞</view>
+    <view class="tip-title">绑定成功！</view>
+    <view class="tip-sub">你们的关系识别码：{{code}}</view>
+    <button class="btn primary press" hover-class="press-hover" bindtap="copyCode">复制识别码</button>
+    <button class="btn ghost danger press" hover-class="press-hover" bindtap="onUnbind">解除绑定</button>
+    <button class="btn ghost press" hover-class="press-hover" bindtap="goHome">回到首页</button>
+  </view>
+</view>

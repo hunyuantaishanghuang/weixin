@@ -1,0 +1,51 @@
+.diary { min-height: 100vh; background: #FFF5F7; padding-bottom: 160rpx; }
+.banner {
+  background: linear-gradient(135deg, #A18CD1, #FBC2EB); color: #fff;
+  padding: 40rpx 40rpx 44rpx; border-radius: 0 0 36rpx 36rpx;
+  box-shadow: 0 8rpx 24rpx rgba(161,140,209,0.25);
+}
+.banner-title { font-size: 40rpx; font-weight: bold; }
+.banner-sub { font-size: 24rpx; margin-top: 10rpx; opacity: 0.9; }
+.list { padding: 24rpx 32rpx; }
+.entry {
+  background: #fff; border-radius: 20rpx; padding: 28rpx; margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(161,140,209,0.1);
+  border-left: 8rpx solid #FBC2EB;
+}
+.entry-head { display: flex; align-items: center; }
+.mood { font-size: 44rpx; margin-right: 16rpx; }
+.date { flex: 1; font-size: 24rpx; color: #999; }
+.del { color: #FF6B81; font-size: 24rpx; }
+.text { font-size: 30rpx; color: #444; margin-top: 16rpx; line-height: 1.6; }
+.imgs { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 16rpx; }
+.img { width: 150rpx; height: 150rpx; border-radius: 12rpx; }
+.img-add {
+  width: 150rpx; height: 150rpx; border: 2rpx dashed #ccc; border-radius: 12rpx;
+  display: flex; align-items: center; justify-content: center; font-size: 50rpx; color: #bbb;
+}
+.empty { text-align: center; color: #bbb; font-size: 26rpx; padding: 60rpx 0; }
+.fab {
+  position: fixed; right: 40rpx; bottom: 60rpx;
+  background: #FF6B81; color: #fff; font-size: 30rpx;
+  padding: 24rpx 40rpx; border-radius: 50rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255,107,129,0.4);
+}
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 10; }
+.sheet { background: #fff; width: 100%; border-radius: 28rpx 28rpx 0 0; padding: 40rpx; box-sizing: border-box; }
+.sheet-title { font-size: 34rpx; font-weight: bold; text-align: center; margin-bottom: 30rpx; }
+.moods { display: flex; flex-wrap: wrap; gap: 16rpx; margin-bottom: 24rpx; }
+.mood-item {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14rpx 18rpx; border-radius: 16rpx; background: #F6F6F6;
+}
+.mood-item.active { background: #FFEAF0; outline: 2rpx solid #FF6B81; }
+.mi-icon { font-size: 44rpx; }
+.mi-label { font-size: 22rpx; color: #666; margin-top: 4rpx; }
+.text-input {
+  width: 100%; height: 180rpx; background: #F6F6F6; border-radius: 12rpx;
+  padding: 20rpx; box-sizing: border-box; font-size: 28rpx; margin-bottom: 20rpx;
+}
+.sheet-actions { display: flex; gap: 20rpx; margin-top: 10rpx; }
+.btn { flex: 1; border-radius: 30rpx; font-size: 30rpx; padding: 18rpx 0; }
+.btn.primary { background: #FF6B81; color: #fff; }
+.btn.ghost { background: #F2F2F2; color: #666; }

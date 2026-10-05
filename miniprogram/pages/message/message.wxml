@@ -1,0 +1,15 @@
+<view class="msg">
+  <view class="chat">
+    <view class="bubble {{item.mine?'mine':''}}" wx:for="{{messages}}" wx:key="_id">
+      <view class="content">{{item.content}}</view>
+      <view class="time">{{item.date}}</view>
+    </view>
+    <view class="empty" wx:if="{{!messages.length}}">还没有留言，给TA写第一句吧~</view>
+  </view>
+
+  <view class="input-bar">
+    <button class="love-btn press" hover-class="press-hover" bindtap="genLove">💗 来句情话</button>
+    <input class="input" placeholder="想对TA说…" value="{{input}}" bindinput="onInput" confirm-type="send" bindconfirm="send" />
+    <button class="send-btn press" hover-class="press-hover" bindtap="send">发送</button>
+  </view>
+</view>

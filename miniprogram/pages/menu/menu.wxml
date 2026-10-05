@@ -1,0 +1,82 @@
+<view class="menu">
+  <!-- 顶部：谁做饭提示 -->
+  <view class="banner">
+    <view class="banner-title">🍽 今天，谁下厨？</view>
+    <view class="banner-sub">把馋嘴的菜点给TA，回家就有着落</view>
+  </view>
+
+  <!-- Tab -->
+  <view class="tabs">
+    <view class="tab {{tab==='cook'?'active':''}}" data-tab="cook" bindtap="switchTab">菜谱库（{{dishes.length}}）</view>
+    <view class="tab {{tab==='order'?'active':''}}" data-tab="order" bindtap="switchTab">今日点单（{{orders.length}}）</view>
+  </view>
+
+  <!-- 菜谱库 -->
+  <view wx:if="{{tab==='cook'}}" class="list">
+    <view class="dish press" wx:for="{{dishes}}" wx:key="_id" hover-class="press-hover" hover-stay-time="80">
+      <image wx:if="{{item.image}}" class="dish-img" src="{{item.image}}" mode="aspectFill" />
+      <view class="dish-img placeholder" wx:else>🍲</view>
+      <view class="dish-info">
+        <view class="dish-name">{{item.name}}</view>
+        <view class="dish-mat" wx:if="{{item.materials.length}}">材料：{{item.materials}}</view>
+        <view class="dish-note" wx:if="{{item.note}}">{{item.note}}</view>
+      </view>
+      <button class="order-btn press" hover-class="press-hover" data-dish="{{item}}" bindtap="orderDish">点给TA</button>
+    </view>
+    <view class="empty" wx:if="{{!dishes.length}}">菜谱空空，点右下角加一道吧</view>
+  </view>
+
+  <!-- 今日点单 -->
+  <view wx:else class="list">
+    <view class="order {{item.done?'done':''}} press" wx:for="{{orders}}" wx:key="_id" hover-class="press-hover" hover-stay-time="80">
+      <view class="check" data-o="{{item}}" bindtap="toggleDone">{{item.done?'✅':'⬜️'}}</view>
+      <view class="order-info">
+        <view class="order-name">{{item.name}}</view>
+        <view class="order-mat" wx:if="{{item.materials.length}}">材料：{{item.materials}}</view>
+      </view>
+      <view class="del" data-id="{{item._id}}" bindtap="removeOrder">✕</view>
+    </view>
+    <view class="empty" wx:if="{{!orders.length}}">今天还没点菜呢~</view>
+  </view>
+
+  <!-- 悬浮加菜 -->
+  <view class="fab press" hover-class="press-hover" hover-stay-time="80" bindtap="openAdd">＋ 加菜</view>
+
+  <!-- 添加弹层 -->
+  <view class="mask" wx:if="{{showAdd}}" bindtap="closeAdd">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">添一道菜</view>
+
+      <view class="field">
+        <text class="label">菜名</text>
+        <input class="input" placeholder="如：番茄炒蛋" value="{{form.name}}" bindinput="onName" />
+      </view>
+      <view class="field">
+        <text class="label">食材</text>
+        <input class="input" placeholder="逗号分隔，如：番茄,鸡蛋" value="{{form.materials}}" bindinput="onMaterials" />
+      </view>
+      <view class="field">
+        <text class="label">备注 / 做法</text>
+        <input class="input" placeholder="做法或口味，可空" value="{{form.note}}" bindinput="onNote" />
+      </view>
+      <view class="field">
+        <text class="label">图片</text>
+        <view class="img-row">
+          <image wx:if="{{form.image}}" class="img-prev" src="{{form.image}}" mode="aspectFill" />
+          <view class="img-add press" hover-class="press-hover" bindtap="uploadImage">📷 上传</view>
+        </view>
+      </view>
+
+      <view class="ai-box">
+        <text class="label">🤖 智能识别（粘贴菜谱文字或链接）</text>
+        <textarea class="paste" placeholder="把网页或聊天里的菜名和食材粘过来，AI 帮你整理" value="{{pastedText}}" bindinput="onPasteInput" />
+        <button class="ai-btn press" hover-class="press-hover" loading="{{parsing}}" bindtap="parsePaste">智能识别并添加</button>
+      </view>
+
+      <view class="sheet-actions">
+        <button class="btn ghost press" hover-class="press-hover" bindtap="closeAdd">取消</button>
+        <button class="btn primary press" hover-class="press-hover" bindtap="submitDish">手动添加</button>
+      </view>
+    </view>
+  </view>
+</view>
