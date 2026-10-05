@@ -1,0 +1,15 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "our-little-days-miniapp",
+  "description": "我们的小日子 · 微信小程序轻量外壳",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.3.4"
+}

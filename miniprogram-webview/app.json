@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FF6B81",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "我们的小日子",
+    "backgroundColor": "#FFF5F7",
+    "backgroundTextStyle": "light"
+  },
+  "sitemapLocation": "sitemap.json"
+}

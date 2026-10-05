@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  our-little-days:
+    build: .
+    container_name: our-little-days-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production

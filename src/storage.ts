@@ -18,6 +18,8 @@ import {
   StatusCode,
   PokeType,
   PokeRecord,
+  CoupleLocation,
+  PairLocationState,
 } from "./types";
 
 export const MOODS: MoodConfig[] = [
@@ -39,6 +41,7 @@ const STORAGE_KEYS = {
   ADVENTURES: "couple_days_adventures",
   STATUSES: "couple_days_statuses",
   POKES: "couple_days_pokes",
+  LOCATIONS: "couple_days_locations",
 };
 
 export const PRESET_STATUSES: {
@@ -1433,6 +1436,92 @@ export const storage = {
       n.id === id ? { ...n, sticker: n.sticker === sticker ? undefined : sticker } : n
     );
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(all));
+  },
+
+  // --- 📍 实时位置与距离 (GPS / 蓝牙靠近雷达) ---
+  calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371000; // 地球半径 (米)
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c);
+  },
+
+  getLocationState(pairId: string): PairLocationState {
+    try {
+      const data = localStorage.getItem(`${STORAGE_KEYS.LOCATIONS}_${pairId}`);
+      if (data) return JSON.parse(data);
+    } catch (e) {
+      console.error(e);
+    }
+    const locA: CoupleLocation = {
+      role: "A",
+      nickname: "男孩",
+      latitude: 22.5408,
+      longitude: 113.9344,
+      address: "南山区科技园软件产业基地",
+      city: "深圳市",
+      battery: 86,
+      isCharging: false,
+      statusTag: "在公司办公",
+      updateTime: formatDateTime(new Date(Date.now() - 5 * 60000)),
+    };
+    const locB: CoupleLocation = {
+      role: "B",
+      nickname: "女孩",
+      latitude: 22.5385,
+      longitude: 114.0558,
+      address: "福田区中心城CBD星巴克",
+      city: "深圳市",
+      battery: 62,
+      isCharging: true,
+      statusTag: "悠闲喝奶茶中",
+      updateTime: formatDateTime(new Date(Date.now() - 2 * 60000)),
+    };
+    const dist = this.calculateDistance(locA.latitude, locA.longitude, locB.latitude, locB.longitude);
+    return {
+      pairId,
+      locationA: locA,
+      locationB: locB,
+      distanceMeters: dist,
+      isNearBluetooth: dist <= 25,
+      lastCloudSyncTime: new Date().toISOString(),
+    };
+  },
+
+  saveLocationState(pairId: string, state: PairLocationState): void {
+    localStorage.setItem(`${STORAGE_KEYS.LOCATIONS}_${pairId}`, JSON.stringify(state));
+  },
+
+  updateCoupleLocation(pairId: string, role: Role, update: Partial<CoupleLocation>): PairLocationState {
+    const current = this.getLocationState(pairId);
+    const targetKey = role === "A" ? "locationA" : "locationB";
+    const otherKey = role === "A" ? "locationB" : "locationA";
+    const updatedTarget: CoupleLocation = {
+      ...current[targetKey],
+      ...update,
+      updateTime: formatDateTime(new Date()),
+    };
+    const otherLoc = current[otherKey];
+    const dist = this.calculateDistance(
+      updatedTarget.latitude,
+      updatedTarget.longitude,
+      otherLoc.latitude,
+      otherLoc.longitude
+    );
+    const newState: PairLocationState = {
+      ...current,
+      [targetKey]: updatedTarget,
+      distanceMeters: dist,
+      isNearBluetooth: dist <= 25,
+      lastCloudSyncTime: new Date().toISOString(),
+    };
+    this.saveLocationState(pairId, newState);
+    return newState;
   },
 
   resetDefaults(): void {

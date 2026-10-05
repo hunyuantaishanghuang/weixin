@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PageRoute, PairState, MenuOrder, MessageItem, PeriodRecord, DiaryEntry, AdventureCard, PairLiveStatus } from "../types";
 import { ChevronRight, Heart, Sparkles, AlertCircle, Utensils, CalendarHeart, BookHeart, MessageCircleHeart, Dices } from "lucide-react";
+import { CoupleDistanceRadar } from "./CoupleDistanceRadar";
 
 interface HomePageProps {
   pair: PairState;
@@ -188,6 +189,9 @@ export const HomePage: React.FC<HomePageProps> = ({
           </span>
         </div>
       )}
+
+      {/* 📍 情侣实时距离与位置雷达 (云端实时通信 + GPS + 蓝牙靠近感应) */}
+      <CoupleDistanceRadar pair={pair} isBlueTheme={isBlue} />
 
       {/* Featured Interactive Hero Highlight: 恋爱大冒险 */}
       <div

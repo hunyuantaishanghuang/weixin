@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFF0F3",
+    "navigationBarTitleText": "我们的小日子",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于计算与伴侣之间的实时物理距离及蓝牙近场感应"
+    }
+  },
+  "style": "v2"
+}

@@ -2,6 +2,18 @@ export type Role = "A" | "B";
 export type Gender = "male" | "female";
 export type AppTheme = "pink" | "blue";
 
+export interface AuthUser {
+  id: string;
+  username: string;
+  nickname: string;
+  avatar: string;
+  gender: Gender;
+  loginType: "wechat" | "account";
+  openid?: string;
+  token?: string;
+  pairId?: string;
+}
+
 export interface PairState {
   pairId: string;
   status: "unbound" | "created" | "pending" | "bound";
@@ -142,3 +154,26 @@ export interface AdventureCard {
   pairId: string;
   createTime: string;
 }
+
+export interface CoupleLocation {
+  role: Role;
+  nickname: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  city?: string;
+  battery?: number; // 手机剩余电量百分比
+  isCharging?: boolean; // 充电状态
+  statusTag?: string; // 如 "在公司", "在家", "地铁通勤中", "商场逛街"
+  updateTime: string;
+}
+
+export interface PairLocationState {
+  pairId: string;
+  locationA: CoupleLocation;
+  locationB: CoupleLocation;
+  distanceMeters: number; // 两人直线物理距离 (米)
+  isNearBluetooth: boolean; // 蓝牙近场感应 (< 20米)
+  lastCloudSyncTime: string;
+}
+

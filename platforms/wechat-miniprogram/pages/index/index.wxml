@@ -1,0 +1,10 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <!-- 微信原生轻量内嵌 Web 全功能组件，实现一次编写多端实时同步 -->
+  <web-view 
+    src="{{webUrl}}" 
+    bindmessage="onWebMessage"
+    bindload="onWebLoad"
+    binderror="onWebError"
+  />
+</view>

@@ -1,0 +1,40 @@
+{
+  "envId": "cloud-d3gbi9e14940c4306",
+  "version": "2.0",
+  "$schema": "https://framework-api.cloudbase.net/schema/cloudbaserc.json",
+  "functionRoot": "./cloudfunctions",
+  "functions": [
+    {
+      "name": "dataOps",
+      "timeout": 10,
+      "envId": "cloud-d3gbi9e14940c4306",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "http": true
+    },
+    {
+      "name": "auth",
+      "timeout": 10,
+      "envId": "cloud-d3gbi9e14940c4306",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "http": true
+    },
+    {
+      "name": "pair",
+      "timeout": 10,
+      "envId": "cloud-d3gbi9e14940c4306",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "http": true
+    },
+    {
+      "name": "ai",
+      "timeout": 10,
+      "envId": "cloud-d3gbi9e14940c4306",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "http": true
+    }
+  ]
+}

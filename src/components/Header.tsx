@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowLeft, RefreshCw, Users, Heart, Palette } from "lucide-react";
 import { PageRoute, PairState, AppTheme } from "../types";
+import { PWAInstallButton } from "./PWAInstallButton";
 
 interface HeaderProps {
   currentPage: PageRoute;
@@ -88,8 +89,9 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Zone 3: Actions (Theme Toggle, Role Switcher, Reset) */}
+        {/* Zone 3: Actions (PWA Install, Theme Toggle, Role Switcher, Reset) */}
         <div className="flex items-center space-x-1.5 shrink-0">
+          <PWAInstallButton />
           
           {/* Theme background switcher: Pink vs Blue */}
           <button

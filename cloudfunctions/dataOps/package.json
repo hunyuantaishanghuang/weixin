@@ -1,0 +1,9 @@
+{
+  "name": "dataOps",
+  "version": "1.0.0",
+  "description": "WeChat CloudBase Data Operations Service for couple-days",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
