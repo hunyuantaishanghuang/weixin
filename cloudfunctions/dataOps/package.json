@@ -1,9 +1,0 @@
-{
-  "name": "dataOps",
-  "version": "1.0.0",
-  "description": "情侣小程序数据读写（按 pairId 隔离）",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}
