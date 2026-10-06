@@ -1,0 +1,134 @@
+<!-- pages/calendar/index.wxml -->
+<view class="container">
+  
+  <!-- 📅 日期切换栏 -->
+  <view class="card date-header flex items-center justify-between">
+    <view class="date-left flex items-center">
+      <text class="cal-icon">🗓️</text>
+      <text class="current-date-text">{{selectedDate}}</text>
+    </view>
+    <view class="btn-primary text-xs" bindtap="openRecordModal">✍️ 记录我的心情</view>
+  </view>
+
+  <!-- 🌟 双人心态并列展示区域（核心：两人同时显示，绝不互相覆盖） -->
+  <view class="section-title mb-2">今日情侣心态双视角</view>
+
+  <!-- 男孩心态卡片 -->
+  <view class="card mood-card mood-card-boy">
+    <view class="mood-header flex items-center justify-between">
+      <view class="flex items-center">
+        <view class="role-avatar boy-bg">👦</view>
+        <view>
+          <text class="role-name">{{pairInfo.nicknameA || '男孩'}} 的心情</text>
+          <text class="mood-time text-xs text-muted" wx:if="{{boyEntry}}">{{boyEntry.time || '今日已记录'}}</text>
+        </view>
+      </view>
+      <block wx:if="{{boyEntry}}">
+        <view class="mood-tag flex items-center" style="background: {{boyEntry.moodColor}}20; color: {{boyEntry.moodColor}};">
+          <text class="mood-emoji">{{boyEntry.moodEmoji}}</text>
+          <text>{{boyEntry.moodLabel}}</text>
+        </view>
+      </block>
+      <block wx:else>
+        <text class="badge badge-blue">尚未记录</text>
+      </block>
+    </view>
+
+    <view class="mood-body">
+      <block wx:if="{{boyEntry}}">
+        <view class="mood-content">“{{boyEntry.text}}”</view>
+      </block>
+      <block wx:else>
+        <view class="mood-empty flex items-center justify-between">
+          <text class="text-xs text-muted">男孩今天还没写心声呢~</text>
+          <button class="btn-secondary text-xs" bindtap="remindPartner">戳TA提醒</button>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 女孩心态卡片 -->
+  <view class="card mood-card mood-card-girl">
+    <view class="mood-header flex items-center justify-between">
+      <view class="flex items-center">
+        <view class="role-avatar girl-bg">👧</view>
+        <view>
+          <text class="role-name">{{pairInfo.nicknameB || '女孩'}} 的心情</text>
+          <text class="mood-time text-xs text-muted" wx:if="{{girlEntry}}">{{girlEntry.time || '今日已记录'}}</text>
+        </view>
+      </view>
+      <block wx:if="{{girlEntry}}">
+        <view class="mood-tag flex items-center" style="background: {{girlEntry.moodColor}}20; color: {{girlEntry.moodColor}};">
+          <text class="mood-emoji">{{girlEntry.moodEmoji}}</text>
+          <text>{{girlEntry.moodLabel}}</text>
+        </view>
+      </block>
+      <block wx:else>
+        <text class="badge badge-pink">尚未记录</text>
+      </block>
+    </view>
+
+    <view class="mood-body">
+      <block wx:if="{{girlEntry}}">
+        <view class="mood-content">“{{girlEntry.text}}”</view>
+      </block>
+      <block wx:else>
+        <view class="mood-empty flex items-center justify-between">
+          <text class="text-xs text-muted">女孩今天还没写心声呢~</text>
+          <button class="btn-secondary text-xs" bindtap="remindPartner">戳TA提醒</button>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 📖 近期双人心声记录流 -->
+  <view class="section-title mb-2 mt-4">过往美好心声轨迹</view>
+  <block wx:for="{{historyEntries}}" wx:key="id">
+    <view class="card history-item">
+      <view class="flex items-center justify-between mb-1">
+        <view class="flex items-center">
+          <text class="history-role-icon">{{item.isBoy ? '👦' : '👧'}}</text>
+          <text class="history-name font-bold">{{item.authorName}}</text>
+          <text class="history-date text-xs text-muted">· {{item.dateKey}}</text>
+        </view>
+        <text class="history-mood-badge">{{item.moodEmoji}} {{item.moodLabel}}</text>
+      </view>
+      <view class="history-text">“{{item.text}}”</view>
+    </view>
+  </block>
+
+  <!-- 弹窗：记录我的心情与日记 -->
+  <view class="modal-mask" wx:if="{{showRecordModal}}">
+    <view class="modal-content card">
+      <view class="modal-title">记录我今天的心情与心声</view>
+      
+      <!-- 身份选择 -->
+      <view class="role-selector flex justify-center mb-3">
+        <view class="role-pill {{myRole === 'A' ? 'role-active-boy' : ''}}" bindtap="selectRole" data-role="A">
+          👦 我是 {{pairInfo.nicknameA || '男孩'}}
+        </view>
+        <view class="role-pill {{myRole === 'B' ? 'role-active-girl' : ''}}" bindtap="selectRole" data-role="B">
+          👧 我是 {{pairInfo.nicknameB || '女孩'}}
+        </view>
+      </view>
+
+      <!-- 6种心情选择 -->
+      <view class="mood-grid">
+        <block wx:for="{{moodOptions}}" wx:key="key">
+          <view class="mood-option {{selectedMoodKey === item.key ? 'mood-selected' : ''}}" bindtap="selectMood" data-key="{{item.key}}">
+            <text class="mood-opt-icon">{{item.icon}}</text>
+            <text class="mood-opt-label">{{item.label}}</text>
+          </view>
+        </block>
+      </view>
+
+      <textarea class="textarea-field" placeholder="写下今天想对TA说的悄悄话或心情日记..." value="{{diaryText}}" bindinput="onInputDiary" />
+      
+      <view class="modal-actions flex justify-between">
+        <button class="btn-secondary flex-1" style="margin-right: 16rpx;" bindtap="closeRecordModal">取消</button>
+        <button class="btn-primary flex-1" bindtap="submitDiary">同步至云端</button>
+      </view>
+    </view>
+  </view>
+
+</view>

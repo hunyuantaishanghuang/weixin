@@ -1,0 +1,146 @@
+<!-- pages/pair/index.wxml -->
+<view class="container">
+  
+  <!-- 🟢 当前微信账号与登录身份卡片 -->
+  <view class="card user-card">
+    <view class="flex items-center justify-between pb-2 mb-2 border-b">
+      <view class="flex items-center">
+        <view class="wx-icon-badge">微</view>
+        <view class="user-title font-bold">微信授权账号</view>
+        <text class="badge badge-green ml-1">已登录</text>
+      </view>
+      <view class="btn-account text-xs text-pink" bindtap="openAuthModal">切换/注册账号</view>
+    </view>
+
+    <view class="flex items-center justify-between pt-1">
+      <view class="flex items-center">
+        <view class="avatar-large">{{userInfo.avatar || '👦'}}</view>
+        <view class="user-info-text">
+          <view class="user-nick font-bold">{{userInfo.nickname || '微信用户'}}</view>
+          <view class="user-openid text-xs text-muted" bindtap="copyOpenId">
+            <text>OpenID: {{userInfo.openid || '获取中...'}}</text>
+            <text class="copy-hint">复制</text>
+          </view>
+        </view>
+      </view>
+      <view class="cloud-status flex items-center">
+        <text class="cloud-dot"></text>
+        <text class="text-xs text-muted">云数据库已联通</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 💍 伴侣配对空间卡片 -->
+  <view class="card pair-card">
+    <view class="flex items-center justify-between mb-3">
+      <view class="section-title">情侣专属绑定空间</view>
+      <text class="badge {{isBound ? 'badge-pink' : 'badge-blue'}}">
+        {{isBound ? '已绑定生效' : '等待配对连接'}}
+      </text>
+    </view>
+
+    <!-- 已经绑定的情况 -->
+    <block wx:if="{{isBound}}">
+      <view class="bound-box flex flex-col items-center">
+        <view class="bound-avatars flex items-center justify-center">
+          <view class="avatar boy-avatar-lg">{{pairInfo.nicknameA ? pairInfo.nicknameA[0] : '男'}}</view>
+          <text class="heart-pulse">💖</text>
+          <view class="avatar girl-avatar-lg">{{pairInfo.nicknameB ? pairInfo.nicknameB[0] : '女'}}</view>
+        </view>
+        <view class="bound-names font-bold mt-2">
+          {{pairInfo.nicknameA || '男孩'}} & {{pairInfo.nicknameB || '女孩'}}
+        </view>
+        <view class="pair-code-box flex items-center justify-center mt-2" bindtap="copyPairId">
+          <text class="code-label">专属数据隔离标识码：</text>
+          <text class="code-val font-bold">{{pairId}}</text>
+          <text class="copy-tag">复制</text>
+        </view>
+        <view class="data-isolated-tip text-xs text-muted mt-2">
+          🔒 严格物理隔离：所有点菜、日记心声均归属于此专属空间
+        </view>
+        <button class="btn-unbind mt-3" bindtap="handleUnbind">解除当前绑定</button>
+      </view>
+    </block>
+
+    <!-- 尚未绑定的情况：双人互发邀请码流程 -->
+    <block wx:else>
+      <view class="unbound-flow">
+        
+        <!-- 方式1：我发起邀请 -->
+        <view class="sub-step card-inner">
+          <view class="step-title font-bold mb-1">方式一：向TA发起配对邀请</view>
+          <view class="step-desc text-xs text-muted mb-2">生成你的专属6位邀请码，TA输入后即可完成双向绑定</view>
+          
+          <block wx:if="{{myInviteCode}}">
+            <view class="invite-box flex items-center justify-between">
+              <text class="invite-code">{{myInviteCode}}</text>
+              <button class="btn-primary text-xs" bindtap="copyInviteCode">复制邀请码发给TA</button>
+            </view>
+            <view class="text-xs text-muted mt-1">请等待TA在小程序中输入此码，双方同意后自动生成专属小空间~</view>
+          </block>
+          <block wx:else>
+            <button class="btn-primary w-full" bindtap="createInviteCode">生成我的专属配对邀请码</button>
+          </block>
+        </view>
+
+        <!-- 方式2：TA发来了邀请码 -->
+        <view class="sub-step card-inner mt-3">
+          <view class="step-title font-bold mb-1">方式二：TA发来了邀请码？</view>
+          <view class="step-desc text-xs text-muted mb-2">在此输入伴侣发送给你的 6 位邀请码直接建立连接</view>
+          
+          <view class="input-row flex">
+            <input class="input-code flex-1" placeholder="输入伴侣的邀请码（如 INV-8A9C）" value="{{inputCode}}" bindinput="onInputCode" />
+            <button class="btn-bind" bindtap="submitJoinPair">确认绑定</button>
+          </view>
+        </view>
+
+      </view>
+    </block>
+  </view>
+
+  <!-- 📑 云数据库多租户数据隔离原理解析 -->
+  <view class="card explainer-card">
+    <view class="flex items-center justify-between" bindtap="toggleExplainer">
+      <view class="flex items-center">
+        <text class="db-icon">🗄️</text>
+        <text class="font-bold text-sm">云端数据库多情侣数据隔离说明</text>
+      </view>
+      <text class="arrow">{{showExplainer ? '∧' : '∨'}}</text>
+    </view>
+    <view class="explainer-content text-xs text-muted mt-2" wx:if="{{showExplainer}}">
+      <view>1. 每一个微信用户授权登录后，均拥有底层独立的 OpenID 与账号档案；</view>
+      <view class="mt-1">2. 双方通过配对码确认后，在云数据库 pairs 表生成专属的 pairId（如 LUV520）；</view>
+      <view class="mt-1">3. 点菜、双人心声日历、大冒险等所有数据均携带 pairId 物理分区，千万对情侣数据互不干扰、严格安全隔离。</view>
+    </view>
+  </view>
+
+  <!-- 弹窗：账号注册与切换 -->
+  <view class="modal-mask" wx:if="{{showAuthModal}}">
+    <view class="modal-content card">
+      <view class="modal-title">账号管理与跨端登录</view>
+      
+      <view class="tab-row flex justify-center mb-3">
+        <view class="tab-item {{authTab === 'wechat' ? 'tab-active' : ''}}" bindtap="setAuthTab" data-tab="wechat">微信一键登录</view>
+        <view class="tab-item {{authTab === 'account' ? 'tab-active' : ''}}" bindtap="setAuthTab" data-tab="account">账号密码登录/注册</view>
+      </view>
+
+      <block wx:if="{{authTab === 'wechat'}}">
+        <view class="text-xs text-muted text-center mb-3">微信云开发底层安全直连，自动获取微信唯一用户凭证</view>
+        <button class="btn-primary w-full" bindtap="doWechatAuth">刷新微信授权身份</button>
+      </block>
+
+      <block wx:if="{{authTab === 'account'}}">
+        <input class="input-field" placeholder="用户名（至少3位字符）" value="{{authUsername}}" bindinput="onInputUsername" />
+        <input class="input-field" password placeholder="密码（至少6位）" value="{{authPassword}}" bindinput="onInputPassword" />
+        <input class="input-field" placeholder="情侣称呼昵称（选填）" value="{{authNickname}}" bindinput="onInputNickname" />
+        <view class="flex justify-between mt-2">
+          <button class="btn-secondary flex-1" style="margin-right: 16rpx;" bindtap="doAccountLogin">直接登录</button>
+          <button class="btn-primary flex-1" bindtap="doAccountRegister">注册新账号</button>
+        </view>
+      </block>
+
+      <button class="btn-secondary w-full mt-3" bindtap="closeAuthModal">关闭</button>
+    </view>
+  </view>
+
+</view>

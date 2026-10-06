@@ -21,6 +21,8 @@ import {
   CoupleLocation,
   PairLocationState,
 } from "./types";
+import tomatoImg from "./assets/images/dish_tomato_scrambled_eggs_1791210819836.jpg";
+import colaImg from "./assets/images/dish_cola_chicken_wings_1791210837153.jpg";
 
 export const MOODS: MoodConfig[] = [
   { key: "happy", icon: "😊", label: "开心", color: "#F59E0B", bgColor: "bg-amber-100 text-amber-800" },
@@ -142,7 +144,7 @@ const DEFAULT_DISHES: Dish[] = [
     name: "番茄炒蛋",
     materials: ["番茄", "土鸡蛋", "小葱", "白糖"],
     note: "酸甜适中，多留点汤汁拌饭最香啦~",
-    image: "/src/assets/images/dish_tomato_scrambled_eggs_1791210819836.jpg",
+    image: tomatoImg,
     createTime: new Date(Date.now() - 5 * 86400000).toISOString(),
     pairId: "LUV520",
   },
@@ -151,7 +153,7 @@ const DEFAULT_DISHES: Dish[] = [
     name: "秘制可乐鸡翅",
     materials: ["鸡中翅", "可口可乐", "生姜", "料酒", "熟白芝麻"],
     note: "两面划刀先煎至金黄，收汁浓稠时撒上芝麻",
-    image: "/src/assets/images/dish_cola_chicken_wings_1791210837153.jpg",
+    image: colaImg,
     createTime: new Date(Date.now() - 4 * 86400000).toISOString(),
     pairId: "LUV520",
   },
@@ -180,7 +182,7 @@ const DEFAULT_ORDERS: MenuOrder[] = [
     name: "番茄炒蛋",
     materials: ["番茄", "土鸡蛋", "小葱", "白糖"],
     note: "酸甜适中，多留点汤汁拌饭最香啦~",
-    image: "/src/assets/images/dish_tomato_scrambled_eggs_1791210819836.jpg",
+    image: tomatoImg,
     dateKey: getTodayKey(),
     done: true,
     createTime: new Date(Date.now() - 3600000).toISOString(),
@@ -192,7 +194,7 @@ const DEFAULT_ORDERS: MenuOrder[] = [
     name: "秘制可乐鸡翅",
     materials: ["鸡中翅", "可口可乐", "生姜", "料酒", "熟白芝麻"],
     note: "两面划刀先煎至金黄，收汁浓稠时撒上芝麻",
-    image: "/src/assets/images/dish_cola_chicken_wings_1791210837153.jpg",
+    image: colaImg,
     dateKey: getTodayKey(),
     done: false,
     createTime: new Date(Date.now() - 1800000).toISOString(),

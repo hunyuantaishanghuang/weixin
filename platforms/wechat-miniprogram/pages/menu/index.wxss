@@ -1,0 +1,145 @@
+/* pages/menu/index.wxss */
+.container {
+  padding: 24rpx;
+  min-height: 100vh;
+}
+.title-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+.box-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1E293B;
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1E293B;
+}
+.empty-hint {
+  font-size: 24rpx;
+  color: #94A3B8;
+  padding: 24rpx 0;
+  text-align: center;
+}
+.order-item {
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F1F5F9;
+}
+.order-done .dish-name {
+  text-decoration: line-through;
+  color: #94A3B8;
+}
+.check-box {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 18rpx;
+  color: #fff;
+  font-size: 24rpx;
+}
+.check-box.checked {
+  background-color: #10B981;
+  border-color: #10B981;
+}
+.dish-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1E293B;
+}
+.btn-del {
+  font-size: 36rpx;
+  color: #CBD5E1;
+  padding: 8rpx 16rpx;
+}
+.dish-card {
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+.dish-badge-icon {
+  width: 72rpx;
+  height: 72rpx;
+  background-color: #FFF0F3;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-right: 18rpx;
+}
+.dish-main-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #1E293B;
+}
+.dish-materials {
+  margin-top: 4rpx;
+}
+.btn-order {
+  background: linear-gradient(135deg, #FF6B81 0%, #FF8E9E 100%);
+  color: #fff;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: bold;
+  padding: 12rpx 24rpx;
+  margin: 0;
+  line-height: 1.4;
+  border: none;
+}
+.dish-tip {
+  margin-top: 16rpx;
+  background: #FFFBF0;
+  border-radius: 14rpx;
+  padding: 12rpx 16rpx;
+  font-size: 22rpx;
+  color: #B45309;
+  display: flex;
+  align-items: flex-start;
+}
+.tip-icon {
+  margin-right: 8rpx;
+}
+.modal-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 40rpx;
+}
+.modal-content {
+  width: 100%;
+  max-width: 600rpx;
+}
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1E293B;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+.input-field {
+  background: #F8FAFC;
+  border: 1rpx solid #E2E8F0;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 26rpx;
+  margin-bottom: 20rpx;
+}
+.textarea-field {
+  background: #F8FAFC;
+  border: 1rpx solid #E2E8F0;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 26rpx;
+  width: 100%;
+  height: 140rpx;
+  margin-bottom: 24rpx;
+}

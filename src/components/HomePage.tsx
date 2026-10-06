@@ -254,7 +254,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="bg-white rounded-2xl p-4 border border-pink-100/70 shadow-[0_4px_20px_rgba(255,107,129,0.06)] hover:shadow-md hover:border-pink-200 active:scale-[0.97] transition-all cursor-pointer flex flex-col justify-between h-40 group"
         >
           <div className="flex items-start justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white shadow-sm shadow-rose-200">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500 bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white shadow-sm shadow-rose-200">
               <Utensils className="w-5 h-5" />
             </div>
             <span className="text-[11px] text-slate-400 group-hover:text-slate-600 transition-colors">
@@ -278,7 +278,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="bg-white rounded-2xl p-4 border border-pink-100/70 shadow-[0_4px_20px_rgba(255,107,129,0.06)] hover:shadow-md hover:border-pink-200 active:scale-[0.97] transition-all cursor-pointer flex flex-col justify-between h-40 group"
         >
           <div className="flex items-start justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-400 to-pink-300 flex items-center justify-center text-white shadow-sm shadow-pink-200">
+            <div className="w-11 h-11 rounded-2xl bg-rose-500 bg-gradient-to-br from-rose-400 to-pink-300 flex items-center justify-center text-white shadow-sm shadow-pink-200">
               <CalendarHeart className="w-5 h-5" />
             </div>
             <span className="text-[11px] text-slate-400 group-hover:text-slate-600 transition-colors tabular-nums">
@@ -302,7 +302,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="bg-white rounded-2xl p-4 border border-pink-100/70 shadow-[0_4px_20px_rgba(255,107,129,0.06)] hover:shadow-md hover:border-pink-200 active:scale-[0.97] transition-all cursor-pointer flex flex-col justify-between h-40 group"
         >
           <div className="flex items-start justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white shadow-sm shadow-purple-200">
+            <div className="w-11 h-11 rounded-2xl bg-purple-500 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white shadow-sm shadow-purple-200">
               <BookHeart className="w-5 h-5" />
             </div>
             <span className="text-[11px] text-slate-400 group-hover:text-slate-600 transition-colors">
@@ -326,7 +326,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="bg-white rounded-2xl p-4 border border-pink-100/70 shadow-[0_4px_20px_rgba(255,107,129,0.06)] hover:shadow-md hover:border-pink-200 active:scale-[0.97] transition-all cursor-pointer flex flex-col justify-between h-40 group"
         >
           <div className="flex items-start justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-white shadow-sm shadow-emerald-200">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500 bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-white shadow-sm shadow-emerald-200">
               <MessageCircleHeart className="w-5 h-5" />
             </div>
             <span className="text-[11px] text-slate-400 group-hover:text-slate-600 transition-colors tabular-nums">

@@ -49,6 +49,30 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    // 监听微信小程序通过 URL 传递的真实微信身份凭据
+    try {
+      if (typeof window !== "undefined" && window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        const openid = params.get("openid");
+        const nickname = params.get("nickname");
+        const urlPairId = params.get("pairId");
+
+        if (openid) {
+          handleUpdatePair((prev) => ({
+            ...prev,
+            memberA: openid,
+            nicknameA: decodeURIComponent(nickname || prev.nicknameA || "微信用户"),
+            ...(urlPairId ? { pairId: urlPairId, status: "bound" as const } : {}),
+          }));
+          showToast(`已通过微信授权登录：${decodeURIComponent(nickname || "微信用户")}`);
+        }
+      }
+    } catch (e) {
+      console.warn("微信身份参数解析提示:", e);
+    }
+  }, []);
+
+  useEffect(() => {
     setDishes(storage.getDishes(pair.pairId));
     setOrders(storage.getOrders(pair.pairId));
     setPeriods(storage.getPeriods(pair.pairId));

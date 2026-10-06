@@ -31,8 +31,19 @@ function genCode() {
   return code;
 }
 
+async function ensureCollection(name) {
+  try {
+    await db.createCollection(name);
+  } catch (e) {
+    // 集合已存在或创建忽略
+  }
+}
+
 exports.main = async (event, context) => {
   const isHttp = !!event.httpMethod;
+
+  await ensureCollection(PAIRS_COLLECTION);
+  await ensureCollection("users");
 
   // Handle CORS Preflight for HTTP mode
   if (isHttp && event.httpMethod === "OPTIONS") {

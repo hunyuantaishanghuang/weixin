@@ -11,6 +11,31 @@ class AuthService {
   }
 
   public loadUser(): AuthUser | null {
+    // 1. 优先检查 URL 是否携带微信小程序传递的真实微信身份参数
+    try {
+      if (typeof window !== "undefined" && window.location && window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        const openid = params.get("openid");
+        if (openid) {
+          const realWxUser: AuthUser = {
+            id: params.get("userId") || openid,
+            username: `wx_${openid.slice(-6)}`,
+            nickname: decodeURIComponent(params.get("nickname") || "微信用户"),
+            avatar: decodeURIComponent(params.get("avatar") || "👦"),
+            gender: "male",
+            loginType: "wechat",
+            openid: openid,
+            pairId: params.get("pairId") || "",
+          };
+          this.saveUser(realWxUser);
+          return realWxUser;
+        }
+      }
+    } catch (e) {
+      console.warn("解析小程序微信登录参数提示:", e);
+    }
+
+    // 2. 从本地缓存读取已登录的真实用户
     try {
       const data = localStorage.getItem(STORAGE_KEY_AUTH_USER);
       if (data) {
@@ -19,18 +44,8 @@ class AuthService {
     } catch (e) {
       console.error("Failed to load auth user:", e);
     }
-    // Default pre-populated guest/demo WeChat user
-    const defaultUser: AuthUser = {
-      id: "user_jack_001",
-      username: "jack_520",
-      nickname: "阿杰",
-      avatar: "👦",
-      gender: "male",
-      loginType: "wechat",
-      openid: "wx_openid_jack_001",
-      pairId: "LUV520",
-    };
-    return defaultUser;
+
+    return null;
   }
 
   public saveUser(user: AuthUser | null): void {

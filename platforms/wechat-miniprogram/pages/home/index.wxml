@@ -1,0 +1,130 @@
+<!-- pages/home/index.wxml -->
+<view class="container">
+  
+  <!-- 💖 浪漫问候卡片 -->
+  <view class="hero-card card">
+    <view class="hero-top flex items-center justify-between">
+      <view class="hero-badge flex items-center">
+        <text class="heart-icon">💖</text>
+        <text class="hero-greeting">{{greeting}}，属于你们的小日子</text>
+      </view>
+      <text class="days-badge">相伴第 <text class="days-num">{{daysTogether}}</text> 天</text>
+    </view>
+
+    <view class="hero-title">愿每一天，都心动如初</view>
+
+    <!-- 情侣头像与状态锁扣 -->
+    <view class="couple-lockup flex items-center justify-between" bindtap="goToPair">
+      <view class="flex items-center">
+        <view class="avatar-group flex">
+          <view class="avatar boy-avatar">{{pairInfo.nicknameA ? pairInfo.nicknameA[0] : '男'}}</view>
+          <view class="avatar girl-avatar">{{pairInfo.nicknameB ? pairInfo.nicknameB[0] : '女'}}</view>
+        </view>
+        <view class="couple-names">
+          <block wx:if="{{isBound}}">
+            <text class="names-text">{{pairInfo.nicknameA || '男孩'}} 与 {{pairInfo.nicknameB || '女孩'}} 已绑定</text>
+            <text class="pair-tag">· {{pairId}}</text>
+          </block>
+          <block wx:else>
+            <text class="names-text text-pink">尚未连接伴侣，点此生成专属识别码 →</text>
+          </block>
+        </view>
+      </view>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 🧭 双人实时距离与位置雷达 -->
+  <view class="card radar-card">
+    <view class="radar-header flex items-center justify-between">
+      <view class="flex items-center">
+        <text class="radar-dot"></text>
+        <text class="radar-title">双人实时距离与位置雷达</text>
+      </view>
+      <text class="badge badge-green">云端实时互通</text>
+    </view>
+
+    <view class="radar-main flex items-center justify-between">
+      <view>
+        <view class="distance-val">相距约 <text class="distance-num">{{distanceKm}}</text> 公里</view>
+        <view class="distance-sub">{{distanceDesc}}</view>
+      </view>
+      <view class="radar-circle flex items-center justify-center">
+        <text class="radar-wave"></text>
+        <text class="radar-heart">💖</text>
+      </view>
+    </view>
+
+    <!-- 位置详情 -->
+    <view class="location-detail flex justify-between">
+      <view class="loc-item">
+        <text class="loc-role">👦 {{pairInfo.nicknameA || '男孩'}}</text>
+        <text class="loc-text">{{locA}}</text>
+      </view>
+      <view class="loc-item">
+        <text class="loc-role">👧 {{pairInfo.nicknameB || '女孩'}}</text>
+        <text class="loc-text">{{locB}}</text>
+      </view>
+    </view>
+
+    <!-- 隔空亲密互动贴贴 -->
+    <view class="poke-bar flex justify-between">
+      <view class="poke-btn" bindtap="sendPoke" data-type="hug">
+        <text>🫂</text><text>抱抱</text>
+      </view>
+      <view class="poke-btn" bindtap="sendPoke" data-type="tea">
+        <text>🧋</text><text>投喂奶茶</text>
+      </view>
+      <view class="poke-btn" bindtap="sendPoke" data-type="kiss">
+        <text>💋</text><text>亲亲</text>
+      </view>
+      <view class="poke-btn" bindtap="sendPoke" data-type="rub">
+        <text>💆</text><text>摸摸头</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 🎛️ 4大生活功能快捷入口 -->
+  <view class="grid-cards">
+    <!-- 1. 今日点菜 -->
+    <view class="grid-card card" bindtap="goToMenu">
+      <view class="grid-top flex items-center justify-between">
+        <view class="grid-icon bg-amber">🍳</view>
+        <text class="grid-badge">{{pendingOrdersCount > 0 ? pendingOrdersCount + '道待下厨' : '菜谱库'}}</text>
+      </view>
+      <view class="grid-title">今日点菜</view>
+      <view class="grid-desc">想吃的，点给TA做</view>
+    </view>
+
+    <!-- 2. 经期记录 -->
+    <view class="grid-card card" bindtap="goToPeriod">
+      <view class="grid-top flex items-center justify-between">
+        <view class="grid-icon bg-rose">🌸</view>
+        <text class="grid-badge">还有 {{periodDays}} 天</text>
+      </view>
+      <view class="grid-title">经期记录</view>
+      <view class="grid-desc">温柔呵护，贴心提醒</view>
+    </view>
+
+    <!-- 3. 双人心情日历 -->
+    <view class="grid-card card" bindtap="goToCalendar">
+      <view class="grid-top flex items-center justify-between">
+        <view class="grid-icon bg-purple">💌</view>
+        <text class="grid-badge">双人心声</text>
+      </view>
+      <view class="grid-title">双人心情日历</view>
+      <view class="grid-desc">同一天记录彼此情绪</view>
+    </view>
+
+    <!-- 4. 恋爱大冒险 -->
+    <view class="grid-card card" bindtap="goToAdventure">
+      <view class="grid-top flex items-center justify-between">
+        <view class="grid-icon bg-green">🎲</view>
+        <text class="grid-badge">亲密互动</text>
+      </view>
+      <view class="grid-title">恋爱大冒险</view>
+      <view class="grid-desc">真心话与心跳挑战</view>
+    </view>
+  </view>
+
+</view>

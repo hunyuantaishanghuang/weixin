@@ -1,18 +1,45 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/home/index",
+    "pages/menu/index",
+    "pages/calendar/index",
+    "pages/adventure/index",
+    "pages/pair/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FFF0F3",
+    "navigationBarBackgroundColor": "#FFF5F7",
     "navigationBarTitleText": "我们的小日子",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF5F7"
   },
-  "sitemapLocation": "sitemap.json",
-  "permission": {
-    "scope.userLocation": {
-      "desc": "用于计算与伴侣之间的实时物理距离及蓝牙近场感应"
-    }
+  "tabBar": {
+    "color": "#94A3B8",
+    "selectedColor": "#FF5370",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/menu/index",
+        "text": "点菜"
+      },
+      {
+        "pagePath": "pages/calendar/index",
+        "text": "双人心态"
+      },
+      {
+        "pagePath": "pages/adventure/index",
+        "text": "大冒险"
+      },
+      {
+        "pagePath": "pages/pair/index",
+        "text": "我的绑定"
+      }
+    ]
   },
-  "style": "v2"
+  "sitemapLocation": "sitemap.json"
 }

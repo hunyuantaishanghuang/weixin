@@ -1,0 +1,76 @@
+<!-- pages/menu/index.wxml -->
+<view class="container">
+  
+  <!-- 🍳 今日点餐看板 -->
+  <view class="card today-box">
+    <view class="flex items-center justify-between mb-2">
+      <view class="flex items-center">
+        <text class="title-icon">🥘</text>
+        <text class="box-title">今日上桌清单</text>
+      </view>
+      <text class="badge badge-pink">{{orders.length}} 道菜</text>
+    </view>
+
+    <block wx:if="{{orders.length === 0}}">
+      <view class="empty-hint">今天还没有点菜哦，快从下方菜谱里挑一道想吃的吧~</view>
+    </block>
+
+    <block wx:for="{{orders}}" wx:key="id">
+      <view class="order-item flex items-center justify-between {{item.done ? 'order-done' : ''}}">
+        <view class="flex items-center">
+          <view class="check-box {{item.done ? 'checked' : ''}}" bindtap="toggleOrder" data-id="{{item.id}}">
+            <text wx:if="{{item.done}}">✓</text>
+          </view>
+          <view>
+            <view class="dish-name">{{item.name}}</view>
+            <view class="dish-sub text-xs text-muted">{{item.done ? '已下厨做好' : '等待投喂中'}}</view>
+          </view>
+        </view>
+        <view class="btn-del" bindtap="removeOrder" data-id="{{item.id}}">×</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 📖 私房菜谱库 -->
+  <view class="flex items-center justify-between mb-2 px-1">
+    <view class="section-title">私房情侣菜谱库</view>
+    <view class="btn-secondary text-xs" bindtap="openAddModal">+ 添加私房菜</view>
+  </view>
+
+  <view class="dish-list">
+    <block wx:for="{{dishes}}" wx:key="id">
+      <view class="card dish-card">
+        <view class="dish-card-top flex items-center justify-between">
+          <view class="flex items-center">
+            <view class="dish-badge-icon">🍲</view>
+            <view>
+              <view class="dish-main-name">{{item.name}}</view>
+              <view class="dish-materials text-xs text-muted">食材：{{item.materialsStr}}</view>
+            </view>
+          </view>
+          <button class="btn-order" bindtap="orderDish" data-item="{{item}}">想吃·点TA</button>
+        </view>
+        <view class="dish-tip" wx:if="{{item.note}}">
+          <text class="tip-icon">💡</text>
+          <text>{{item.note}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 弹窗：添加新菜 -->
+  <view class="modal-mask" wx:if="{{showModal}}">
+    <view class="modal-content card">
+      <view class="modal-title">添加私房爱心菜谱</view>
+      <input class="input-field" placeholder="菜品名称（如：香菇滑鸡）" value="{{newDishName}}" bindinput="onInputName" />
+      <input class="input-field" placeholder="主要食材（用逗号分隔）" value="{{newDishMaterials}}" bindinput="onInputMaterials" />
+      <textarea class="textarea-field" placeholder="烹饪秘诀或甜甜叮嘱（选填）" value="{{newDishNote}}" bindinput="onInputNote" />
+      
+      <view class="modal-actions flex justify-between">
+        <button class="btn-secondary flex-1" style="margin-right: 16rpx;" bindtap="closeAddModal">取消</button>
+        <button class="btn-primary flex-1" bindtap="submitNewDish">确认添加</button>
+      </view>
+    </view>
+  </view>
+
+</view>

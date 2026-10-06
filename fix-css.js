@@ -109,6 +109,9 @@ function transformCss(rawCss) {
     return oklchToHex(l, c, h, a);
   });
 
+  // 移除渐变中的 in oklab 插值空间声明（老内核不识别 in oklab 会导致渐变背景完全失效呈现白块）
+  css = css.replace(/\s+in\s+oklab/g, '');
+
   // 补齐 translate / scale 的标准 transform 回退语法
   css = css.replace(
     /translate:\s*var\(--tw-translate-x\)\s+var\(--tw-translate-y\)/g,

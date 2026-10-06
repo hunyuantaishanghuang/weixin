@@ -35,8 +35,20 @@ function generateToken(userId) {
   return crypto.createHash("md5").update(payload).digest("hex");
 }
 
+async function ensureCollection(name) {
+  try {
+    await db.createCollection(name);
+  } catch (e) {
+    // 集合已存在或创建忽略
+  }
+}
+
 exports.main = async (event, context) => {
   const isHttp = !!event.httpMethod;
+
+  // 确保数据库基础集合存在，彻底杜绝首次注册时集合不存在报错
+  await ensureCollection(USERS_COLLECTION);
+  await ensureCollection(PAIRS_COLLECTION);
 
   // Handle CORS Preflight for HTTP mode (Android / HarmonyOS / Web)
   if (isHttp && event.httpMethod === "OPTIONS") {

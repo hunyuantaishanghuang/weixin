@@ -85,7 +85,8 @@ function legacyCssDowngradePlugin(): Plugin {
             }
             css = cleanSupports;
 
-            // 步骤 4：补充 translate 与 scale 的 transform 回退规则
+            // 步骤 4：补充 translate 与 scale 的 transform 回退规则并移除渐变中的 in oklab
+            css = css.replace(/\s+in\s+oklab/g, '');
             css = css.replace(
               /translate:\s*var\(--tw-translate-x\)\s+var\(--tw-translate-y\)/g,
               'transform:translate(var(--tw-translate-x,0),var(--tw-translate-y,0));translate:var(--tw-translate-x) var(--tw-translate-y)'

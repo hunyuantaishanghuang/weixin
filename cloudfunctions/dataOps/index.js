@@ -36,6 +36,14 @@ function formatResponse(statusCode, data, isHttp = false) {
   };
 }
 
+async function ensureCollection(name) {
+  try {
+    await db.createCollection(name);
+  } catch (e) {
+    // 忽略已存在
+  }
+}
+
 exports.main = async (event, context) => {
   const isHttp = !!event.httpMethod;
 
@@ -67,9 +75,10 @@ exports.main = async (event, context) => {
     return formatResponse(400, { success: false, error: "缺少 pairId 伴侣识别码" }, isHttp);
   }
 
-  try {
-    const colName = type; // dishes, orders, periods, diaries, messages, statuses, adventures, pokes
+  const colName = type || "couple_data";
+  await ensureCollection(colName);
 
+  try {
     switch (action) {
       case "get": {
         let query = db.collection(colName).where({ pairId });
@@ -84,6 +93,32 @@ exports.main = async (event, context) => {
         if (!data) {
           return formatResponse(400, { success: false, error: "缺少新增数据" }, isHttp);
         }
+
+        // 🌟 专门处理「双人心情日历」：同一天两人各自独立存储，谁也不覆盖谁
+        if (colName === "diaries" && data.dateKey) {
+          const userIdentifier = data.userId || data.userRole || "A";
+          // 检查该用户在这一天是否已有心情记录
+          const existing = await db.collection(colName).where({
+            pairId,
+            dateKey: data.dateKey,
+            ...(data.userId ? { userId: data.userId } : { userRole: data.userRole })
+          }).get();
+
+          if (existing.data.length > 0) {
+            // 更新该用户当天的记录，而不是覆盖另一半的记录
+            const targetId = existing.data[0]._id;
+            await db.collection(colName).doc(targetId).update({
+              data: {
+                mood: data.mood,
+                text: data.text,
+                authorName: data.authorName,
+                updateTime: new Date().toISOString()
+              }
+            });
+            return formatResponse(200, { success: true, id: targetId, message: "当天心情已更新" }, isHttp);
+          }
+        }
+
         const itemToSave = {
           ...data,
           pairId,
