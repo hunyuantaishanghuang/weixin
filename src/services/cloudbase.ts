@@ -10,8 +10,8 @@ const STORAGE_KEY_TCB_CONFIG = "couple_days_tcb_config";
 
 const DEFAULT_CONFIG: CloudBaseConfig = {
   envId: "cloud-d3gbi9e14940c4306",
-  httpEndpoint: "https://cloud-d3gbi9e14940c4306.service.tcloudbase.com",
-  enabled: false, // User can toggle this on in settings
+  httpEndpoint: "https://cloud-d3gbi9e14940c4306.api.tcloudbasegateway.com/v1/functions",
+  enabled: true, // 默认开启云端同步
 };
 
 class CloudBaseService {
@@ -88,14 +88,15 @@ class CloudBaseService {
     }
 
     // 1. Try HTTP Trigger endpoint first if available
-    const httpBase = this.config.httpEndpoint || `https://${this.config.envId}.service.tcloudbase.com`;
-    const httpUrl = `${httpBase}/${name}`;
+    const httpBase = this.config.httpEndpoint || `https://${this.config.envId}.api.tcloudbasegateway.com/v1/functions`;
+    const httpUrl = `${httpBase.replace(/\/+$/, "")}/${name}`;
 
     try {
       const resp = await fetch(httpUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
         body: JSON.stringify(data),
       });
@@ -132,11 +133,12 @@ class CloudBaseService {
    */
   public async testConnection(): Promise<{ ok: boolean; message: string; method?: "http" | "sdk" }> {
     // Test HTTP endpoint
-    const httpBase = this.config.httpEndpoint || `https://${this.config.envId}.service.tcloudbase.com`;
+    const httpBase = this.config.httpEndpoint || `https://${this.config.envId}.api.tcloudbasegateway.com/v1/functions`;
+    const httpUrl = `${httpBase.replace(/\/+$/, "")}/pair`;
     try {
-      const resp = await fetch(`${httpBase}/ai`, {
+      const resp = await fetch(httpUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({ action: "ping" }),
       });
       if (resp.ok) {

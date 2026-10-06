@@ -3,7 +3,7 @@ App({
     console.log("我们的小日子小程序启动");
   },
   globalData: {
-    // 替换为您的服务器域名或当前云端网址
-    webUrl: "https://ais-dev-k23oepuroewhqaouogbmfv-357208839505.asia-northeast1.run.app"
+    // 您的微信云开发静态托管网址（通过 tcb hosting deploy 部署后生效）
+    webUrl: "https://cloud-d3gbi9e14940c4306.tcloudbaseapp.com"
   }
 });

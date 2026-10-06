@@ -19,9 +19,8 @@ App({
   },
 
   globalData: {
-    // 生产环境可配置为您部署的 Web 应用公网域名或云托管网址
-    // 在开发测试阶段，可以使用本项目的云端预览网址
-    webUrl: "https://ais-dev-k23oepuroewhqaouogbmfv-357208839505.asia-northeast1.run.app",
+    // 您的微信云开发静态托管网址（通过 tcb hosting deploy 部署后生效）
+    webUrl: "https://cloud-d3gbi9e14940c4306.tcloudbaseapp.com",
     userInfo: null,
     pairId: null
   }

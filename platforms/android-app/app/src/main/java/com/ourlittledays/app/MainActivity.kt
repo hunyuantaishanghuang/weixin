@@ -64,7 +64,19 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        webView.loadUrl(webAppUrl)
+        // 优先检查本地 assets 中是否存在打包好的离线 index.html（离线秒开模式，断网可用）
+        val hasLocalAssets = try {
+            assets.open("index.html").close()
+            true
+        } catch (e: Exception) {
+            false
+        }
+
+        if (hasLocalAssets) {
+            webView.loadUrl("file:///android_asset/index.html")
+        } else {
+            webView.loadUrl(webAppUrl)
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")

@@ -2,7 +2,7 @@
   "miniprogramRoot": "./",
   "projectname": "our-little-days-miniprogram",
   "description": "我们的小日子 · 微信小程序多端版",
-  "appid": "touristappid",
+  "appid": "wx2846fd90feb90892",
   "setting": {
     "urlCheck": false,
     "es6": true,
