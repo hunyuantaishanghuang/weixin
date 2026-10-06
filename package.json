@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
-    "build": "vite build",
-    "fix-css": "node scripts/downgrade-css.mjs",
+    "build": "vite build && node fix-css.js",
+    "fix-css": "node fix-css.js",
     "lint": "tsc --noEmit",
     "preview": "vite preview --port 3000 --host 0.0.0.0"
   },

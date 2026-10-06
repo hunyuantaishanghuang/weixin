@@ -7,12 +7,15 @@ Page({
   },
 
   onLoad(options) {
-    // 支持通过参数传入专属配对码或路径
+    const baseUrl = app.globalData.webUrl;
+    const sep = baseUrl.includes("?") ? "&" : "?";
+    let finalUrl = `${baseUrl}${sep}_t=${Date.now()}`;
     if (options && options.pairId) {
-      this.setData({
-        webUrl: `${app.globalData.webUrl}?pairId=${options.pairId}`
-      });
+      finalUrl += `&pairId=${options.pairId}`;
     }
+    this.setData({
+      webUrl: finalUrl
+    });
   },
 
   onShareAppMessage() {
