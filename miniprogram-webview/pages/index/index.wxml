@@ -1,2 +1,0 @@
-<!-- 全屏嵌入我们的小日子 Web 应用 -->
-<web-view src="{{webUrl}}" bindmessage="onWebMessage"></web-view>

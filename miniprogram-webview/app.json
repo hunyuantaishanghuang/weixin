@@ -1,13 +1,45 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/home/index",
+    "pages/menu/index",
+    "pages/calendar/index",
+    "pages/adventure/index",
+    "pages/pair/index"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#FF6B81",
-    "navigationBarTextStyle": "white",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFF5F7",
     "navigationBarTitleText": "我们的小日子",
-    "backgroundColor": "#FFF5F7",
-    "backgroundTextStyle": "light"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF5F7"
+  },
+  "tabBar": {
+    "color": "#94A3B8",
+    "selectedColor": "#FF5370",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/menu/index",
+        "text": "点菜"
+      },
+      {
+        "pagePath": "pages/calendar/index",
+        "text": "双人心态"
+      },
+      {
+        "pagePath": "pages/adventure/index",
+        "text": "大冒险"
+      },
+      {
+        "pagePath": "pages/pair/index",
+        "text": "我的绑定"
+      }
+    ]
   },
   "sitemapLocation": "sitemap.json"
 }

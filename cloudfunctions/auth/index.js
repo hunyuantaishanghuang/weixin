@@ -10,9 +10,11 @@ const _ = db.command;
 const USERS_COLLECTION = "users";
 const PAIRS_COLLECTION = "pairs";
 
-// Helper for CORS & HTTP response
+// Universal response formatter for both WeChat callFunction and HTTP Gateway
 function formatResponse(statusCode, data, isHttp = false) {
-  if (!isHttp) return data;
+  if (!isHttp) {
+    return { statusCode, ...data };
+  }
   return {
     statusCode,
     headers: {
@@ -21,7 +23,7 @@ function formatResponse(statusCode, data, isHttp = false) {
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ statusCode, ...data }),
   };
 }
 
@@ -35,22 +37,23 @@ function generateToken(userId) {
   return crypto.createHash("md5").update(payload).digest("hex");
 }
 
+// Safely ensure collection exists
 async function ensureCollection(name) {
   try {
     await db.createCollection(name);
   } catch (e) {
-    // 集合已存在或创建忽略
+    // Collection already exists or created
   }
 }
 
 exports.main = async (event, context) => {
-  const isHttp = !!event.httpMethod;
+  const isHttp = !!(event.httpMethod || event.requestContext || event.headers);
 
-  // 确保数据库基础集合存在，彻底杜绝首次注册时集合不存在报错
+  // Auto ensure collections exist
   await ensureCollection(USERS_COLLECTION);
   await ensureCollection(PAIRS_COLLECTION);
 
-  // Handle CORS Preflight for HTTP mode (Android / HarmonyOS / Web)
+  // Handle CORS Preflight for HTTP
   if (isHttp && event.httpMethod === "OPTIONS") {
     return {
       statusCode: 204,
@@ -62,7 +65,7 @@ exports.main = async (event, context) => {
     };
   }
 
-  // Parse payload whether called via HTTP body or standard event
+  // Parse payload
   let params = event;
   if (isHttp && event.body) {
     try {
@@ -79,36 +82,44 @@ exports.main = async (event, context) => {
   try {
     switch (action) {
       /**
-       * 1. 微信一键授权免密登录 (WeChat One-Tap Auth)
-       * 小程序端直接获取真实 OPENID，Web / 多端可传 openid
+       * 1. 微信原生免密一键登录
+       * 小程序端自动通过 wx.cloud.callFunction 提取真实 OPENID
        */
       case "wechatLogin": {
-        const targetOpenId = callerOpenId || "wx_guest_" + Date.now().toString(36);
+        const targetOpenId = callerOpenId || (userId ? `uid_${userId}` : `wx_${Date.now().toString(36)}`);
         const now = new Date().toISOString();
 
         // 查找是否已存在该微信用户
-        const userQuery = await db.collection(USERS_COLLECTION).where({ openid: targetOpenId }).get();
-        let userDoc;
+        let userDoc = null;
+        try {
+          const userQuery = await db.collection(USERS_COLLECTION).where({ openid: targetOpenId }).get();
+          if (userQuery.data && userQuery.data.length > 0) {
+            userDoc = userQuery.data[0];
+          }
+        } catch (e) {
+          console.warn("User query notice:", e);
+        }
 
-        if (userQuery.data.length > 0) {
-          userDoc = userQuery.data[0];
-          // 更新最后登录时间与昵称头像（如果有传新的）
+        if (userDoc) {
           const updateData = { lastLoginTime: now };
           if (nickname) updateData.nickname = nickname;
           if (avatar) updateData.avatar = avatar;
           if (gender) updateData.gender = gender;
-          await db.collection(USERS_COLLECTION).doc(userDoc._id).update({ data: updateData });
-          userDoc = { ...userDoc, ...updateData };
+          try {
+            await db.collection(USERS_COLLECTION).doc(userDoc._id).update({ data: updateData });
+            userDoc = { ...userDoc, ...updateData };
+          } catch (e) {}
         } else {
-          // 新注册微信用户
+          // 首次进入：自动创建微信独立账号
           const newUser = {
             openid: targetOpenId,
-            username: `wx_${targetOpenId.substring(targetOpenId.length - 8)}`,
+            username: `wx_${targetOpenId.substring(Math.max(0, targetOpenId.length - 8))}`,
             loginType: "wechat",
             nickname: nickname || "微信小可爱",
-            avatar: avatar || "👦",
+            avatar: avatar || (gender === "female" ? "👧" : "👦"),
             gender: gender || "male",
             pairId: "",
+            role: gender === "female" ? "B" : "A",
             createTime: now,
             lastLoginTime: now,
           };
@@ -116,17 +127,24 @@ exports.main = async (event, context) => {
           userDoc = { ...newUser, _id: res._id };
         }
 
-        // 查找该用户是否已在 pairs 表中绑定伴侣
+        // 检查该用户是否已在 pairs 表中绑定伴侣
         let pairInfo = null;
-        const pairQuery = await db.collection(PAIRS_COLLECTION).where(
-          _.or([
-            { memberA: targetOpenId },
-            { memberB: targetOpenId }
-          ])
-        ).get();
+        const currentUserId = userDoc._id || targetOpenId;
+        try {
+          const pairQuery = await db.collection(PAIRS_COLLECTION).where(
+            _.or([
+              { memberA: targetOpenId },
+              { memberB: targetOpenId },
+              { memberA: currentUserId },
+              { memberB: currentUserId },
+            ])
+          ).get();
 
-        if (pairQuery.data.length > 0) {
-          pairInfo = pairQuery.data[0];
+          if (pairQuery.data && pairQuery.data.length > 0) {
+            pairInfo = pairQuery.data[0];
+          }
+        } catch (e) {
+          console.warn("Pair query notice:", e);
         }
 
         const sessionToken = generateToken(userDoc._id || targetOpenId);
@@ -141,39 +159,41 @@ exports.main = async (event, context) => {
             nickname: userDoc.nickname,
             avatar: userDoc.avatar,
             gender: userDoc.gender,
+            role: userDoc.role || (userDoc.gender === "female" ? "B" : "A"),
             loginType: "wechat",
-            pairId: pairInfo ? pairInfo.pairId : userDoc.pairId || "",
+            pairId: pairInfo ? pairInfo.pairId : (userDoc.pairId || ""),
           },
           pair: pairInfo,
         }, isHttp);
       }
 
       /**
-       * 2. 账号密码注册 (Account Register)
-       * 适用于 Android App, 鸿蒙 App, 网页端或想要独立账号的用户
+       * 2. 独立账号注册 (用户名 + 密码)
+       * 支持多端统一账号、离线或不需要微信号也能独立注册
        */
       case "register": {
         if (!username || !password) {
           return formatResponse(400, { success: false, error: "用户名和密码不能为空" }, isHttp);
         }
 
-        const cleanUsername = username.trim().toLowerCase();
+        const cleanUsername = String(username).trim().toLowerCase();
         if (cleanUsername.length < 3) {
           return formatResponse(400, { success: false, error: "用户名至少3位字符" }, isHttp);
         }
-        if (password.length < 6) {
+        if (String(password).length < 6) {
           return formatResponse(400, { success: false, error: "密码长度至少6位" }, isHttp);
         }
 
         // 检查用户名是否已被占用
         const exists = await db.collection(USERS_COLLECTION).where({ username: cleanUsername }).get();
-        if (exists.data.length > 0) {
+        if (exists.data && exists.data.length > 0) {
           return formatResponse(400, { success: false, error: "该用户名已被注册，请直接登录或换一个" }, isHttp);
         }
 
         const salt = crypto.randomBytes(8).toString("hex");
-        const passwordHash = hashPassword(password, salt);
+        const passwordHash = hashPassword(String(password), salt);
         const now = new Date().toISOString();
+        const userGender = gender || "male";
 
         const newUser = {
           username: cleanUsername,
@@ -181,9 +201,11 @@ exports.main = async (event, context) => {
           salt,
           loginType: "account",
           nickname: nickname || cleanUsername,
-          avatar: avatar || (gender === "female" ? "👧" : "👦"),
-          gender: gender || "male",
+          avatar: avatar || (userGender === "female" ? "👧" : "👦"),
+          gender: userGender,
+          role: userGender === "female" ? "B" : "A",
           pairId: "",
+          openid: callerOpenId || "",
           createTime: now,
           lastLoginTime: now,
         };
@@ -193,7 +215,7 @@ exports.main = async (event, context) => {
 
         return formatResponse(200, {
           success: true,
-          message: "注册成功并已自动登录",
+          message: "账号注册成功并已自动登录",
           token: sessionToken,
           user: {
             id: addRes._id,
@@ -201,6 +223,7 @@ exports.main = async (event, context) => {
             nickname: newUser.nickname,
             avatar: newUser.avatar,
             gender: newUser.gender,
+            role: newUser.role,
             loginType: "account",
             pairId: "",
           },
@@ -209,26 +232,26 @@ exports.main = async (event, context) => {
       }
 
       /**
-       * 3. 账号密码登录 (Account Login)
+       * 3. 独立账号登录 (用户名 + 密码)
        */
       case "login": {
         if (!username || !password) {
           return formatResponse(400, { success: false, error: "请输入用户名和密码" }, isHttp);
         }
 
-        const cleanUsername = username.trim().toLowerCase();
+        const cleanUsername = String(username).trim().toLowerCase();
         const userQuery = await db.collection(USERS_COLLECTION).where({ username: cleanUsername }).get();
 
-        if (userQuery.data.length === 0) {
+        if (!userQuery.data || userQuery.data.length === 0) {
           return formatResponse(404, { success: false, error: "该账号不存在，请先注册" }, isHttp);
         }
 
         const userDoc = userQuery.data[0];
         if (!userDoc.passwordHash || !userDoc.salt) {
-          return formatResponse(400, { success: false, error: "该用户为微信快捷账号，请使用微信登录" }, isHttp);
+          return formatResponse(400, { success: false, error: "该用户为微信快捷账号，请使用微信一键登录" }, isHttp);
         }
 
-        const checkHash = hashPassword(password, userDoc.salt);
+        const checkHash = hashPassword(String(password), userDoc.salt);
         if (checkHash !== userDoc.passwordHash) {
           return formatResponse(401, { success: false, error: "密码错误，请重新输入" }, isHttp);
         }
@@ -246,11 +269,12 @@ exports.main = async (event, context) => {
             { memberA: userDoc._id },
             { memberB: userDoc._id },
             { memberA: userDoc.username },
-            { memberB: userDoc.username }
+            { memberB: userDoc.username },
+            ...(userDoc.openid ? [{ memberA: userDoc.openid }, { memberB: userDoc.openid }] : [])
           ])
         ).get();
 
-        if (pairQuery.data.length > 0) {
+        if (pairQuery.data && pairQuery.data.length > 0) {
           pairInfo = pairQuery.data[0];
         }
 
@@ -265,43 +289,52 @@ exports.main = async (event, context) => {
             nickname: userDoc.nickname,
             avatar: userDoc.avatar,
             gender: userDoc.gender,
+            role: userDoc.role || (userDoc.gender === "female" ? "B" : "A"),
             loginType: userDoc.loginType || "account",
-            pairId: pairInfo ? pairInfo.pairId : userDoc.pairId || "",
+            pairId: pairInfo ? pairInfo.pairId : (userDoc.pairId || ""),
           },
           pair: pairInfo,
         }, isHttp);
       }
 
       /**
-       * 4. 账号关联微信 (Link Account with WeChat OpenID)
+       * 4. 更新个人资料 (昵称、头像、性别)
        */
-      case "bindWechat": {
-        if (!userId) {
+      case "updateProfile": {
+        const targetId = userId || userDoc?._id;
+        if (!targetId) {
           return formatResponse(400, { success: false, error: "缺少用户ID" }, isHttp);
         }
-        const targetOpenId = callerOpenId || openid;
-        if (!targetOpenId) {
-          return formatResponse(400, { success: false, error: "未检测到微信OpenID" }, isHttp);
+        const updateData = {};
+        if (nickname) updateData.nickname = nickname;
+        if (avatar) updateData.avatar = avatar;
+        if (gender) {
+          updateData.gender = gender;
+          updateData.role = gender === "female" ? "B" : "A";
         }
-
-        await db.collection(USERS_COLLECTION).doc(userId).update({
-          data: { openid: targetOpenId },
-        });
-
-        return formatResponse(200, { success: true, message: "微信账号关联成功" }, isHttp);
+        await db.collection(USERS_COLLECTION).doc(targetId).update({ data: updateData });
+        return formatResponse(200, { success: true, message: "个人资料更新成功" }, isHttp);
       }
 
       /**
-       * 5. 获取当前登录用户信息
+       * 5. 获取当前用户信息
        */
       case "getUserInfo": {
         if (!userId && !callerOpenId) {
           return formatResponse(400, { success: false, error: "缺少用户凭据" }, isHttp);
         }
 
-        let query = userId ? db.collection(USERS_COLLECTION).doc(userId) : db.collection(USERS_COLLECTION).where({ openid: callerOpenId });
-        const res = await query.get();
-        const userDoc = Array.isArray(res.data) ? res.data[0] : res.data;
+        let userDoc = null;
+        if (userId) {
+          try {
+            const res = await db.collection(USERS_COLLECTION).doc(userId).get();
+            userDoc = res.data;
+          } catch (e) {}
+        }
+        if (!userDoc && callerOpenId) {
+          const res = await db.collection(USERS_COLLECTION).where({ openid: callerOpenId }).get();
+          if (res.data && res.data.length > 0) userDoc = res.data[0];
+        }
 
         if (!userDoc) {
           return formatResponse(404, { success: false, error: "用户不存在" }, isHttp);
@@ -315,14 +348,15 @@ exports.main = async (event, context) => {
             nickname: userDoc.nickname,
             avatar: userDoc.avatar,
             gender: userDoc.gender,
+            role: userDoc.role || (userDoc.gender === "female" ? "B" : "A"),
             loginType: userDoc.loginType,
-            pairId: userDoc.pairId,
+            pairId: userDoc.pairId || "",
           }
         }, isHttp);
       }
 
       default:
-        return formatResponse(400, { success: false, error: `不支持的认证操作: ${action}` }, isHttp);
+        return formatResponse(400, { success: false, error: `不支持的认证操作: ${action || "未传action"}` }, isHttp);
     }
   } catch (err) {
     console.error("Auth 云函数执行异常:", err);

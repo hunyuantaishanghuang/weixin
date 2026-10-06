@@ -1,0 +1,97 @@
+/** app.wxss - 全局微信原生样式 **/
+page {
+  background-color: #FFF5F7;
+  color: #334155;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+view, text, button, input {
+  box-sizing: border-box;
+}
+
+/* 优雅浪漫圆角卡片 */
+.card {
+  background-color: #FFFFFF;
+  border-radius: 36rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 30rpx rgba(255, 107, 129, 0.06);
+  border: 1rpx solid rgba(255, 229, 236, 0.8);
+}
+
+/* 浪漫粉色渐变主按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B81 0%, #FF8E9E 100%);
+  color: #FFFFFF;
+  border-radius: 999rpx;
+  font-weight: bold;
+  font-size: 28rpx;
+  padding: 22rpx 36rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 20rpx rgba(255, 107, 129, 0.3);
+  border: none;
+  line-height: 1.4;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* 次级按钮 */
+.btn-secondary {
+  background: #FFF0F3;
+  color: #FF5370;
+  border-radius: 999rpx;
+  font-weight: 600;
+  font-size: 26rpx;
+  padding: 18rpx 32rpx;
+  text-align: center;
+  border: 1rpx solid rgba(255, 107, 129, 0.2);
+  line-height: 1.4;
+}
+
+/* 标签徽章 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+.badge-pink {
+  background-color: #FFF0F3;
+  color: #FF5370;
+  border: 1rpx solid rgba(255, 107, 129, 0.2);
+}
+.badge-blue {
+  background-color: #EFF6FF;
+  color: #2563EB;
+  border: 1rpx solid rgba(37, 99, 235, 0.2);
+}
+.badge-green {
+  background-color: #ECFDF5;
+  color: #059669;
+  border: 1rpx solid rgba(5, 150, 105, 0.2);
+}
+
+/* 常用 Flex 布局 */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+
+/* 文本样式 */
+.text-xs { font-size: 24rpx; }
+.text-sm { font-size: 28rpx; }
+.text-base { font-size: 32rpx; }
+.text-lg { font-size: 36rpx; }
+.text-xl { font-size: 40rpx; }
+.font-bold { font-weight: bold; }
+.text-muted { color: #94A3B8; }
+.text-pink { color: #FF5370; }

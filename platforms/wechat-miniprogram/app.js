@@ -7,73 +7,113 @@ App({
     pairId: "",
     isBound: false,
     theme: "pink",
-    unreadOrdersCount: 0
+    unreadOrdersCount: 0,
+    isCloudReady: false,
   },
 
   onLaunch() {
-    console.log("【我们的小日子】原生小程序启动");
-    
+    console.log("【我们的小日子】100% 纯原生微信小程序启动");
+
     // 1. 初始化微信云开发
     if (!wx.cloud) {
-      console.error("请使用 2.2.3 或以上的基础库以使用云能力");
+      console.error("请使用 2.2.3 或以上的基础库以使用微信云能力");
     } else {
-      wx.cloud.init({
-        env: this.globalData.envId,
-        traceUser: true,
-      });
-      console.log("微信云开发初始化成功:", this.globalData.envId);
+      try {
+        wx.cloud.init({
+          env: this.globalData.envId,
+          traceUser: true,
+        });
+        this.globalData.isCloudReady = true;
+        console.log("✅ 微信云开发初始化成功，环境ID:", this.globalData.envId);
+      } catch (e) {
+        console.warn("微信云开发初始化提示:", e);
+      }
     }
 
-    // 2. 自动检查并执行微信一键免密登录
+    // 2. 读取本地缓存（确保即使网络延迟也能秒开）
+    const localUser = wx.getStorageSync("local_user");
+    const localPairId = wx.getStorageSync("local_pairId");
+    const localPairInfo = wx.getStorageSync("local_pairInfo");
+
+    if (localUser) {
+      this.globalData.userInfo = localUser;
+    }
+    if (localPairId) {
+      this.globalData.pairId = localPairId;
+      this.globalData.isBound = true;
+    }
+    if (localPairInfo) {
+      this.globalData.pairInfo = localPairInfo;
+    }
+
+    // 3. 自动静默拉取微信云端账号与伴侣最新状态
     this.autoLogin();
   },
 
   /**
-   * 自动静默登录：通过微信云开发免密获取真实 OpenID 并同步云端用户信息
+   * 通用云函数调用包装器
+   */
+  callCloud(name, data) {
+    return new Promise((resolve, reject) => {
+      if (!wx.cloud) {
+        reject(new Error("当前微信客户端版本过低不支持云开发"));
+        return;
+      }
+      wx.cloud.callFunction({
+        name,
+        data,
+      }).then(res => {
+        let result = res.result;
+        // 如果被网关包装为 { statusCode, body } 结构，自动解包
+        if (result && typeof result.body === "string") {
+          try {
+            result = JSON.parse(result.body);
+          } catch (e) {}
+        }
+        resolve(result);
+      }).catch(err => {
+        console.warn(`云函数 [${name}] 调用异常:`, err);
+        reject(err);
+      });
+    });
+  },
+
+  /**
+   * 自动静默登录：通过微信原生云端获取真实 OpenID 并同步用户信息
    */
   autoLogin(callback) {
-    if (!wx.cloud) return;
+    if (!wx.cloud) {
+      if (typeof callback === "function") callback(this.globalData.userInfo, this.globalData.pairInfo);
+      return;
+    }
 
-    wx.cloud.callFunction({
-      name: "auth",
-      data: { action: "wechatLogin" }
-    }).then(res => {
-      console.log("微信云端鉴权结果:", res.result);
-      if (res.result && res.result.success) {
-        const user = res.result.user;
-        const pair = res.result.pair;
+    this.callCloud("auth", { action: "wechatLogin" }).then(res => {
+      if (res && res.success) {
+        const user = res.user;
+        const pair = res.pair;
 
         this.globalData.userInfo = user;
+        wx.setStorageSync("local_user", user);
+
         if (pair && pair.pairId) {
           this.globalData.pairInfo = pair;
           this.globalData.pairId = pair.pairId;
-          this.globalData.isBound = true;
+          this.globalData.isBound = pair.status === "bound" || !!pair.memberB;
+          wx.setStorageSync("local_pairId", pair.pairId);
+          wx.setStorageSync("local_pairInfo", pair);
         } else if (user.pairId) {
           this.globalData.pairId = user.pairId;
           this.globalData.isBound = true;
-        }
-
-        // 保存到本地缓存以备离线使用
-        wx.setStorageSync("local_user", user);
-        if (this.globalData.pairId) {
-          wx.setStorageSync("local_pairId", this.globalData.pairId);
+          wx.setStorageSync("local_pairId", user.pairId);
+          this.refreshPair();
         }
 
         if (typeof callback === "function") callback(user, pair);
+      } else {
+        if (typeof callback === "function") callback(this.globalData.userInfo, this.globalData.pairInfo);
       }
-    }).catch(err => {
-      console.warn("自动登录提示 (可能云函数未部署或离线):", err);
-      // 读取本地缓存保底
-      const localUser = wx.getStorageSync("local_user");
-      const localPairId = wx.getStorageSync("local_pairId");
-      if (localUser) {
-        this.globalData.userInfo = localUser;
-      }
-      if (localPairId) {
-        this.globalData.pairId = localPairId;
-        this.globalData.isBound = true;
-      }
-      if (typeof callback === "function") callback(localUser, null);
+    }).catch(() => {
+      if (typeof callback === "function") callback(this.globalData.userInfo, this.globalData.pairInfo);
     });
   },
 
@@ -81,22 +121,25 @@ App({
    * 刷新配对状态
    */
   refreshPair(callback) {
-    if (!wx.cloud || !this.globalData.pairId) {
+    const pairId = this.globalData.pairId || wx.getStorageSync("local_pairId");
+    if (!pairId) {
       if (typeof callback === "function") callback(null);
       return;
     }
 
-    wx.cloud.callFunction({
-      name: "pair",
-      data: {
-        action: "getPair",
-        pairId: this.globalData.pairId
-      }
+    this.callCloud("pair", {
+      action: "get",
+      pairId,
     }).then(res => {
-      if (res.result && res.result.success && res.result.pair) {
-        this.globalData.pairInfo = res.result.pair;
-        this.globalData.isBound = res.result.pair.status === "bound";
-        if (typeof callback === "function") callback(res.result.pair);
+      if (res && res.success && res.pair) {
+        this.globalData.pairInfo = res.pair;
+        this.globalData.pairId = res.pair.pairId;
+        this.globalData.isBound = res.pair.status === "bound" || !!res.pair.memberB;
+        wx.setStorageSync("local_pairId", res.pair.pairId);
+        wx.setStorageSync("local_pairInfo", res.pair);
+        if (typeof callback === "function") callback(res.pair);
+      } else {
+        if (typeof callback === "function") callback(null);
       }
     }).catch(() => {
       if (typeof callback === "function") callback(null);

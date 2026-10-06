@@ -1,8 +1,6 @@
 {
-  "miniprogramRoot": "./",
-  "projectname": "our-little-days-miniprogram",
-  "description": "我们的小日子 · 微信小程序多端版",
-  "appid": "wx2846fd90feb90892",
+  "miniprogramRoot": "platforms/wechat-miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "urlCheck": false,
     "es6": true,
@@ -23,7 +21,9 @@
     "compileHotReLoad": true,
     "lazyCodeLoading": "requiredComponents"
   },
+  "appid": "wx2846fd90feb90892",
+  "projectname": "our-little-days-wechat",
+  "description": "我们的小日子 · 100% 纯原生微信小程序与云开发",
   "compileType": "miniprogram",
-  "libVersion": "3.3.4",
-  "cloudfunctionRoot": "../../cloudfunctions/"
+  "libVersion": "3.3.4"
 }
